@@ -7,6 +7,7 @@ function BasicBox(originX, originY) {
 	this.attackActions = [];
 	this.dodgeActions = [];
 	this.direction = 1;
+	this.health = 100;
 }
 
 // extend
@@ -23,9 +24,25 @@ BasicBox.prototype.DEFAULT_ACTIONS = {
 		delay: 1000
 	}, 
 	dodge: {
-		'jump' : {
+		'jumpBack' : {
 			// animation: null,
-			name: 'jump',
+			name: 'jump back',
+			delay: {
+				min: 1200, 
+				max: 2000
+			},
+			velocityX: {
+				min: -100,
+				max: -250
+			},
+			velocityY: {
+				min: 100,
+				max: 200
+			}
+		},
+		'jumpAhead' : {
+			// animation: null,
+			name: 'jump ahead',
 			delay: {
 				min: 1200, 
 				max: 2000
@@ -55,6 +72,22 @@ BasicBox.prototype.DEFAULT_ACTIONS = {
 			velocityY: {
 				min: 10,
 				max: 20
+			}
+		},
+		'jumpDash' : {
+			// animation: null,
+			name: 'jumpdash',
+			delay: {
+				min: 700, 
+				max: 1000
+			},
+			velocityX: {
+				min: 100,
+				max: 350
+			},
+			velocityY: {
+				min: 40,
+				max: 50
 			}
 		}
 	}

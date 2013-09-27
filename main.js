@@ -43,9 +43,11 @@
 	function update() {
         game.physics.collide(boxA.sprite, boxB.sprite);
 		boxA.update();
-		document.getElementById('boxA').innerHTML = 'a: ' + boxA.currentAction.name;
+		document.getElementById('boxAAttack').innerHTML = 'move: ' + boxA.currentAction.name;
+		document.getElementById('boxAHealth').innerHTML = 'health: ' + boxA.health;
 		boxB.update();
-		document.getElementById('boxB').innerHTML = 'b: ' + boxB.currentAction.name;
+		document.getElementById('boxBAttack').innerHTML = 'move: ' + boxB.currentAction.name;
+		document.getElementById('boxBHealth').innerHTML = 'health: ' + boxB.health;
 	}
 
 	function render() {
