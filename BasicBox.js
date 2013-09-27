@@ -5,6 +5,7 @@ function BasicBox(originX, originY) {
 	this.nextAction = this.DEFAULT_ACTIONS.idle;
 	this.actionData = this.DEFAULT_ACTIONS;
 	this.attackActions = [];
+	this.dodgeActions = [];
 	this.direction = 1;
 }
 
@@ -18,22 +19,42 @@ BasicBox.prototype.ACTION_IDLE = 'idle';
 BasicBox.prototype.DEFAULT_ACTIONS = {
 	'idle' : {
 		// animation: null,
+		name: 'idle',
 		delay: 1000
 	}, 
-	attack: {
+	dodge: {
 		'jump' : {
 			// animation: null,
+			name: 'jump',
 			delay: {
-				min: 1000, 
-				max: 1500
+				min: 1200, 
+				max: 2000
 			},
 			velocityX: {
 				min: 100,
 				max: 250
 			},
 			velocityY: {
+				min: 100,
+				max: 200
+			}
+		}
+	},
+	attack: {
+		'dash' : {
+			// animation: null,
+			name: 'dash',
+			delay: {
+				min: 700, 
+				max: 1000
+			},
+			velocityX: {
+				min: 100,
+				max: 350
+			},
+			velocityY: {
 				min: 10,
-				max: 300
+				max: 20
 			}
 		}
 	}
@@ -51,6 +72,8 @@ BasicBox.prototype.initWithGame = function(game) {
 	//parse actions
 	for(action in this.actionData.attack)
 		this.attackActions.push(action);
+	for(action in this.actionData.dodge)
+		this.dodgeActions.push(action);
 
 	this.sprite = game.add.sprite(this.spriteX, this.spriteY, this.SPRITE_BOX);
 	this.sprite.y = game.world.height - this.sprite.height;
@@ -74,8 +97,6 @@ BasicBox.prototype.setTarget = function(newTarget) {
 
 BasicBox.prototype.takeAction = function() {
 	var curr = this.currentAction = this.nextAction;
-	console.log('take action:', curr);
-
 	// find target
 	// TODO: determin fight or flee
 	var diff = this.sprite.x < this.target.sprite.x;
@@ -88,7 +109,7 @@ BasicBox.prototype.takeAction = function() {
 	if(curr.next){
 		this.nextAction = curr.next;
 	} else {
-		this.nextAction = this.getRandomAction();
+		this.nextAction = this.getRandomAttack();
 	}
 
 	// assign velocities
@@ -104,9 +125,19 @@ BasicBox.prototype.takeAction = function() {
 				);
 }
 
-BasicBox.prototype.getRandomAction = function() {
-	var max = this.attackActions.length - 1;
+BasicBox.prototype.getRandomAttack = function() {
+	var max = this.attackActions.length;
 	var rand = Math.floor(Math.random() * max);
+	console.log('rand:', rand);
+	var actionKey = this.attackActions[rand];
+	var actionData = this.actionData.attack[actionKey];
+	return actionData;
+}
+
+BasicBox.prototype.getRandomDodge = function() {
+	var max = this.attackActions.length;
+	var rand = Math.floor(Math.random() * max);
+	console.log('rand:', rand);
 	var actionKey = this.attackActions[rand];
 	var actionData = this.actionData.attack[actionKey];
 	return actionData;

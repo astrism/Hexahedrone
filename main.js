@@ -43,7 +43,9 @@
 	function update() {
         game.physics.collide(boxA.sprite, boxB.sprite);
 		boxA.update();
+		document.getElementById('boxA').innerHTML = 'a: ' + boxA.currentAction.name;
 		boxB.update();
+		document.getElementById('boxB').innerHTML = 'b: ' + boxB.currentAction.name;
 	}
 
 	function render() {
