@@ -8,6 +8,9 @@ function BasicBox(originX, originY) {
 	this.dodgeActions = [];
 	this.direction = 1;
 	this.health = 100;
+	this.fear = 0;
+	this.dead = false;
+	this.gameOver = false;
 }
 
 // extend
@@ -21,74 +24,94 @@ BasicBox.prototype.DEFAULT_ACTIONS = {
 	'idle' : {
 		// animation: null,
 		name: 'idle',
-		delay: 1000
+		delay: {
+			min: 500,
+			max: 700
+		}
 	}, 
-	dodge: {
-		'jumpBack' : {
-			// animation: null,
-			name: 'jump back',
-			delay: {
-				min: 1200, 
-				max: 2000
-			},
-			velocityX: {
-				min: -100,
-				max: -250
-			},
-			velocityY: {
-				min: 100,
-				max: 200
-			}
+	'happyDance' : {
+		// animation: null,
+		name: 'happy dance',
+		delay: {
+			min: 500,
+			max: 700
 		},
-		'jumpAhead' : {
-			// animation: null,
-			name: 'jump ahead',
-			delay: {
-				min: 1200, 
-				max: 2000
-			},
-			velocityX: {
-				min: 100,
-				max: 250
-			},
-			velocityY: {
-				min: 100,
-				max: 200
-			}
+		velocityX: {
+			min: 0,
+			max: 0
+		},
+		velocityY: {
+			min: 100,
+			max: 150
+		},
+		next: 'happyDance'
+	}, 
+	'jumpBack' : {
+		// animation: null,
+		name: 'jump back',
+		type: 'dodge',
+		delay: {
+			min: 1200, 
+			max: 2000
+		},
+		velocityX: {
+			min: -100,
+			max: -250
+		},
+		velocityY: {
+			min: 100,
+			max: 200
 		}
 	},
-	attack: {
-		'dash' : {
-			// animation: null,
-			name: 'dash',
-			delay: {
-				min: 700, 
-				max: 1000
-			},
-			velocityX: {
-				min: 100,
-				max: 350
-			},
-			velocityY: {
-				min: 10,
-				max: 20
-			}
+	'jumpAhead' : {
+		// animation: null,
+		name: 'jump ahead',
+		type: 'dodge',
+		delay: {
+			min: 1200, 
+			max: 2000
 		},
-		'jumpDash' : {
-			// animation: null,
-			name: 'jumpdash',
-			delay: {
-				min: 700, 
-				max: 1000
-			},
-			velocityX: {
-				min: 100,
-				max: 350
-			},
-			velocityY: {
-				min: 40,
-				max: 50
-			}
+		velocityX: {
+			min: 100,
+			max: 250
+		},
+		velocityY: {
+			min: 100,
+			max: 200
+		}
+	},
+	'dash' : {
+		// animation: null,
+		name: 'dash',
+		type: 'attack',
+		delay: {
+			min: 700, 
+			max: 1000
+		},
+		velocityX: {
+			min: 100,
+			max: 350
+		},
+		velocityY: {
+			min: 10,
+			max: 20
+		}
+	},
+	'jumpDash' : {
+		// animation: null,
+		name: 'jumpdash',
+		type: 'attack',
+		delay: {
+			min: 700, 
+			max: 1000
+		},
+		velocityX: {
+			min: 100,
+			max: 350
+		},
+		velocityY: {
+			min: 40,
+			max: 50
 		}
 	}
 }
@@ -103,10 +126,15 @@ BasicBox.prototype.initWithGame = function(game) {
 	console.log('init basic box');
 
 	//parse actions
-	for(action in this.actionData.attack)
-		this.attackActions.push(action);
-	for(action in this.actionData.dodge)
-		this.dodgeActions.push(action);
+	for(actionName in this.actionData){
+		var action = this.actionData[actionName];
+		if(action.type) {
+			if(action.type === 'attack')
+				this.attackActions.push(actionName);
+			else if(action.type === 'dodge')
+				this.dodgeActions.push(actionName);
+		}
+	}
 
 	this.sprite = game.add.sprite(this.spriteX, this.spriteY, this.SPRITE_BOX);
 	this.sprite.y = game.world.height - this.sprite.height;
@@ -129,6 +157,8 @@ BasicBox.prototype.setTarget = function(newTarget) {
 }
 
 BasicBox.prototype.takeAction = function() {
+	if(this.dead) return; //no more actions
+
 	var curr = this.currentAction = this.nextAction;
 	// find target
 	// TODO: determin fight or flee
@@ -140,7 +170,7 @@ BasicBox.prototype.takeAction = function() {
 
 	//assign next or random
 	if(curr.next){
-		this.nextAction = curr.next;
+		this.nextAction = this.actionData[curr.next];
 	} else {
 		this.nextAction = this.getRandomAttack();
 	}
@@ -152,7 +182,7 @@ BasicBox.prototype.takeAction = function() {
 	if(curr.velocityY)
 		this.sprite.velocity.y = this.getValue(curr.velocityY, this.direction);
 
-	nextAction = this.DEFAULT_ACTIONS[action];
+	// nextAction = this.DEFAULT_ACTIONS[action];
 	setTimeout(_.bind(this.takeAction, this), 
 				this.getValue(curr.delay)
 				);
@@ -161,18 +191,18 @@ BasicBox.prototype.takeAction = function() {
 BasicBox.prototype.getRandomAttack = function() {
 	var max = this.attackActions.length;
 	var rand = Math.floor(Math.random() * max);
-	console.log('rand:', rand);
 	var actionKey = this.attackActions[rand];
-	var actionData = this.actionData.attack[actionKey];
+	var actionData = this.actionData[actionKey];
+	if(!actionData) throw new Error('couldnt find action!');
 	return actionData;
 }
 
 BasicBox.prototype.getRandomDodge = function() {
 	var max = this.attackActions.length;
 	var rand = Math.floor(Math.random() * max);
-	console.log('rand:', rand);
 	var actionKey = this.attackActions[rand];
-	var actionData = this.actionData.attack[actionKey];
+	var actionData = this.actionData[actionKey];
+	if(!actionData) throw new Error('couldnt find action!');
 	return actionData;
 }
 
@@ -183,4 +213,20 @@ BasicBox.prototype.getValue = function(rangeSet, direction) {
 	return randValue;
 }
 
+BasicBox.prototype.injure = function(force) {
+	this.health -= 12;
+	this.health = Math.max(0, this.health);
+	this.fear++;
+	if(this.health === 0)
+		this.dead = true;
+}
 
+BasicBox.prototype.charge = function(force) {
+	this.fear--;
+}
+
+BasicBox.prototype.endGame = function(won) {
+	this.gameOver = true;
+	if(won)
+		this.nextAction = this.actionData['happyDance'];
+}

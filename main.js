@@ -19,6 +19,7 @@
 	}
 
 	// objects
+	var gameOver = false;
 	var boxA;
 	var boxB;
 
@@ -41,19 +42,41 @@
 	}
 
 	function update() {
-        game.physics.collide(boxA.sprite, boxB.sprite);
-		boxA.update();
-		document.getElementById('boxAAttack').innerHTML = 'move: ' + boxA.currentAction.name;
-		document.getElementById('boxAHealth').innerHTML = 'health: ' + boxA.health;
-		boxB.update();
-		document.getElementById('boxBAttack').innerHTML = 'move: ' + boxB.currentAction.name;
-		document.getElementById('boxBHealth').innerHTML = 'health: ' + boxB.health;
+		if(!gameOver) {
+	        game.physics.collide(boxA.sprite, boxB.sprite, onCollide);
+			boxA.update();
+			document.getElementById('boxAAttack').innerHTML = 'move: ' + boxA.currentAction.name;
+			document.getElementById('boxAHealth').innerHTML = 'health: ' + Math.round(boxA.health);
+			boxB.update();
+			document.getElementById('boxBAttack').innerHTML = 'move: ' + boxB.currentAction.name;
+			document.getElementById('boxBHealth').innerHTML = 'health: ' + Math.round(boxB.health);
+		}
 	}
 
 	function render() {
 
 		// game.debug.renderRectangle(boxA.sprite.body);
 		// game.debug.renderRectangle(boxB.sprite.body);
+
+	}
+
+	function onCollide(spriteA, spriteB) {
+		var velA = Math.abs(spriteA.velocity.x) + Math.abs(spriteA.velocity.y);
+		var velB = Math.abs(spriteB.velocity.x) + Math.abs(spriteB.velocity.y);
+		if(velA > velB) {
+			boxB.injure(velA - velB);
+			boxA.charge();
+		} else {
+			boxA.injure(velB - velA);
+			boxB.charge();
+		}
+
+		if(boxA.dead || boxB.dead) {
+			console.log('game over');
+			boxA.endGame(boxB.dead);
+			boxB.endGame(boxA.dead);
+			gameOver = true;
+		}
 
 	}
 
