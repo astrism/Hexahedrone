@@ -33,12 +33,12 @@ BasicBox.prototype.DEFAULT_ACTIONS = {
 		// animation: null,
 		name: 'happy dance',
 		delay: {
-			min: 500,
-			max: 700
+			min: 1700,
+			max: 1700
 		},
 		velocityX: {
-			min: 0,
-			max: 0
+			min: -10,
+			max: 10
 		},
 		velocityY: {
 			min: 100,
@@ -141,7 +141,11 @@ BasicBox.prototype.initWithGame = function(game) {
 	this.sprite.body.collideWorldBounds = true;
 	this.sprite.body.gravity.y = 10;
 	this.sprite.body.bounce.setTo(0.2, 0.4);
-	this.sprite.anchor.x = 0.5;
+	this.sprite.body.drag = {
+		x: 50,
+		y: 0
+	};
+	// this.sprite.anchor.x = 0.5;
 }
 
 BasicBox.prototype.update = function() {
@@ -217,8 +221,14 @@ BasicBox.prototype.injure = function(force) {
 	this.health -= 12;
 	this.health = Math.max(0, this.health);
 	this.fear++;
-	if(this.health === 0)
+	if(this.health === 0) {
 		this.dead = true;
+		this.sprite.y += 8;
+		this.sprite.velocity.x = 0;
+		this.sprite.velocity.y = 0;
+		this.sprite.body.collideWorldBounds = false;
+		this.sprite.body.gravity.y = 0;
+	}
 }
 
 BasicBox.prototype.charge = function(force) {
@@ -227,6 +237,6 @@ BasicBox.prototype.charge = function(force) {
 
 BasicBox.prototype.endGame = function(won) {
 	this.gameOver = true;
-	if(won)
+	if(won) 
 		this.nextAction = this.actionData['happyDance'];
 }
