@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:56725916a627627aefd6a1e2de55ad40:1/1$ -->
+<TextureAtlas imagePath="Box.png">
+    <SubTexture name="Box_0000_idle" x="2" y="1610" width="400" height="400"/>
+    <SubTexture name="Box_0001_injury01" x="2" y="1208" width="400" height="400"/>
+    <SubTexture name="Box_0002_injury02" x="404" y="806" width="400" height="400"/>
+    <SubTexture name="Box_0003_injury03" x="2" y="806" width="400" height="400"/>
+    <SubTexture name="Box_0004_injury04" x="404" y="404" width="400" height="400"/>
+    <SubTexture name="Box_0005_injury05" x="2" y="404" width="400" height="400"/>
+    <SubTexture name="Box_0006_injury06" x="404" y="2" width="400" height="400"/>
+    <SubTexture name="Box_0007_injury07" x="2" y="2" width="400" height="400"/>
+</TextureAtlas>
