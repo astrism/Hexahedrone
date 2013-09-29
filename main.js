@@ -28,11 +28,11 @@
 		game.stage.backgroundColor = '#FFFFFF';
 		game.stage.scale = 0.5;
 
-		boxA = new BasicBox(200, 0);
-		boxA.initWithGame(game);
+		boxA = new BasicBox('boxA', 200, 0);
+		boxA.createWithGame(game);
 
-		boxB = new BasicBox(game.world.width - 200, 0);
-		boxB.initWithGame(game);
+		boxB = new BasicBox('boxB', game.world.width - 200, 0);
+		boxB.createWithGame(game);
 
 		// fued
 		boxA.setTarget(boxB);
@@ -66,7 +66,7 @@
 		if(!gameOver) {
 			var velA = Math.abs(spriteA.velocity.x) + Math.abs(spriteA.velocity.y);
 			var velB = Math.abs(spriteB.velocity.x) + Math.abs(spriteB.velocity.y);
-			if(velA > velB) {
+			if(velA < velB) {
 				boxB.injure(velA - velB);
 				boxA.charge();
 			} else {
