@@ -2,6 +2,16 @@
 <html>
 <head>
 	<title>Hexahedrone: orthographic cube fights</title>
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+			font-size: 20px;
+		}
+
+		.separator {
+			color: #777;
+		}
+	</style>
 	<script src="phaser.js"></script>
 	<script src="underscore-min.js"></script>
 	<script src="main.js"></script>
@@ -10,13 +20,15 @@
 </head>
 <body style="background:black; color: white">
 <div>
-	Drone A | 
-	<span id="boxAHealth">health: </span> |
+	Drone A <span class="separator">|</span>
+	<span id="boxAWins">wins: 0</span> <span class="separator">|</span>
+	<span id="boxAHealth">health: </span> <span class="separator">|</span>
 	<span id="boxAAttack">move: </span>
 </div>
 <div>
-	Drone B | 
-	<span id="boxBHealth">health: </span> |
+	Drone B <span class="separator">|</span>
+	<span id="boxBWins">wins: 0</span> <span class="separator">|</span>
+	<span id="boxBHealth">health: </span> <span class="separator">|</span>
 	<span id="boxBAttack">move: </span>
 </div>
 

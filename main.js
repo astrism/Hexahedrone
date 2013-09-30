@@ -22,16 +22,19 @@
 	var gameOver = false;
 	var boxA;
 	var boxB;
+	var boxAWins = 0;
+	var boxBWins = 0;
 
 	function create() {
 		console.log('create');
 		game.stage.backgroundColor = '#FFFFFF';
 		game.stage.scale = 0.5;
 
-		boxA = new BasicBox('boxA', 200, 0);
+		var yPos = game.world.height - 100;
+		boxA = new BasicBox('A', 200, yPos);
 		boxA.createWithGame(game);
 
-		boxB = new BasicBox('boxB', game.world.width - 200, 0);
+		boxB = new BasicBox('B', game.world.width - 300, yPos);
 		boxB.createWithGame(game);
 
 		// fued
@@ -76,12 +79,37 @@
 
 			if(boxA.dead || boxB.dead) {
 				console.log('game over');
+
+				// notify box
 				boxA.endGame(boxB.dead);
 				boxB.endGame(boxA.dead);
+
+				//record win
+				if(boxB.dead) {
+					boxAWins++;
+					document.getElementById('boxAWins').innerHTML = 'wins: ' + boxAWins;
+				}
+				if(boxA.dead) {
+					boxBWins++;
+					document.getElementById('boxBWins').innerHTML = 'wins: ' + boxBWins;
+				}
 				gameOver = true;
+
+				// timer for next battle
+				setTimeout(startNewBattle, 2500);
 			}
 		}
-
 	}
+
+	function startNewBattle() {
+		boxA.restart();
+		boxB.restart();
+
+		gameOver = false;
+	}
+
+
+
+
 
 })();
