@@ -69,10 +69,14 @@
 		if(!gameOver) {
 			var velA = Math.abs(spriteA.velocity.x) + Math.abs(spriteA.velocity.y);
 			var velB = Math.abs(spriteB.velocity.x) + Math.abs(spriteB.velocity.y);
+			// console.log('a:', Math.round(velA), 'b:', Math.round(velB));
+			// injured object is moving faster due to collision?
 			if(velA < velB) {
+				// console.log('injure B');
 				boxB.injure(velA - velB);
 				boxA.charge();
 			} else {
+				// console.log('injure A');
 				boxA.injure(velB - velA);
 				boxB.charge();
 			}
