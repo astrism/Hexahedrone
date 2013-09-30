@@ -142,20 +142,22 @@ BasicBox.prototype.createWithGame = function(game) {
 		}
 	}
 
-	this.sprite = game.add.sprite(this.spriteX, this.spriteY, BasicBox.SPRITE_BOX);
-	this.sprite.y = game.world.height - this.sprite.height;
-	this.sprite.body.collideWorldBounds = true;
-	this.sprite.body.gravity.y = 10;
-	this.sprite.body.bounce.setTo(0.2, 0.4);
-	this.sprite.body.drag = {
-		x: 50,
-		y: 0
-	};
+	//create sprite
+	this.sprite = game.add.sprite(this.spriteX, 0, BasicBox.SPRITE_BOX);
+	this.spriteY = game.world.height - this.sprite.height;
+	this.setupBox();
 
 	//setup sprite animations
 	this.sprite.animations.add(BasicBox.ANIM_IDLE, BasicBox.ANIM_IDLE_FRAMES, 24, false, false);
 	this.sprite.animations.add(BasicBox.ANIM_INJURY, BasicBox.ANIM_INJURY_FRAMES, 24, false, false);
 	this.sprite.animations.play(BasicBox.ANIM_IDLE, 24, false);
+
+	// create text
+	var pos = this.sprite.width * 0.5;
+	var style = { font: "35px Arial", fill: "#FFFFFF", align: "center" };
+	var t = new Phaser.Text(game, pos, pos, this.name, style);
+	t.anchor.setTo(0.5, 0.5);
+	this.sprite.addChild(t);
 };
 
 BasicBox.prototype.update = function() {
@@ -251,3 +253,27 @@ BasicBox.prototype.endGame = function(won) {
 	if(won)
 		this.nextAction = this.actionData['happyDance'];
 };
+
+BasicBox.prototype.setupBox = function() {
+	this.sprite.x = this.spriteX;
+	this.sprite.y = this.spriteY;
+	this.nextAction = BasicBox.DEFAULT_ACTIONS.idle;
+	this.fear = 0;
+	this.gameOver = false;
+	this.sprite.body.collideWorldBounds = true;
+	this.sprite.body.gravity.y = 10;
+	this.sprite.body.bounce.setTo(0.2, 0.4);
+	this.sprite.body.drag = {
+		x: 50,
+		y: 0
+	};
+	this.health = 100;
+	if(this.dead) {
+		this.dead = false;
+		this.takeAction();
+	}
+}
+
+BasicBox.prototype.restart = function() {
+	this.setupBox();
+}
