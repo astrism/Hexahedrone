@@ -234,7 +234,7 @@ BasicBox.prototype.setTarget = function(newTarget) {
 };
 
 BasicBox.prototype.takeAction = function() {
-	if(this.dead || !this.sprite.body.collideWorldBounds) return; //no more actions
+	if(this.dead) return; //no more actions
 
 	var curr = this.currentAction = this.nextAction;
 	console.log(this.name, ': ',curr.name);
