@@ -12,6 +12,8 @@ function BasicBox(boxName, originX, originY) {
 	this.fear = 0;
 	this.dead = false;
 	this.gameOver = false;
+	this.defaultWidth = 0;
+	this.defaultHeight = 0;
 }
 
 // extend
@@ -34,6 +36,22 @@ BasicBox.DEFAULT_ACTIONS = {
 			max: 700
 		}
 	},
+	'rebound' : {
+		// animation: null,
+		name: 'rebound',
+		delay: {
+			min: 2000,
+			max: 2000
+		},
+		velocityX: {
+			min: -500,
+			max: 500
+		},
+		velocityY: {
+			min: 800,
+			max: 1500
+		}
+	},
 	'happyDance' : {
 		// animation: null,
 		name: 'happy dance',
@@ -46,8 +64,8 @@ BasicBox.DEFAULT_ACTIONS = {
 			max: 10
 		},
 		velocityY: {
-			min: 100,
-			max: 150
+			min: 300,
+			max: 350
 		},
 		next: 'happyDance'
 	},
@@ -118,6 +136,23 @@ BasicBox.DEFAULT_ACTIONS = {
 			min: 40,
 			max: 50
 		}
+	},
+	'headstomp' : {
+		// animation: null,
+		name: 'headstomp',
+		type: 'attack',
+		delay: {
+			min: 1200,
+			max: 1400
+		},
+		velocityX: {
+			min: 50,
+			max: 100
+		},
+		velocityY: {
+			min: 1800,
+			max: 2000
+		}
 	}
 };
 
@@ -144,7 +179,9 @@ BasicBox.prototype.createWithGame = function(game) {
 
 	//create sprite
 	this.sprite = game.add.sprite(this.spriteX, 0, BasicBox.SPRITE_BOX);
-	this.spriteY = game.world.height - this.sprite.height;
+	this.defaultWidth = this.sprite.width;
+	this.defaultHeight = this.sprite.height;
+	this.spriteY = game.world.height - this.defaultHeight;
 	this.setupBox();
 
 	//setup sprite animations
@@ -160,12 +197,36 @@ BasicBox.prototype.createWithGame = function(game) {
 	this.sprite.addChild(t);
 };
 
+BasicBox.prototype.setupBox = function() {
+	this.sprite.x = this.spriteX;
+	this.sprite.y = this.spriteY;
+	this.nextAction = BasicBox.DEFAULT_ACTIONS.idle;
+	this.fear = 0;
+	this.gameOver = false;
+	this.sprite.body.collideWorldBounds = true;
+	this.sprite.body.gravity.y = 80;
+	this.sprite.body.bounce.setTo(0.2, 0.4);
+	this.sprite.body.drag = {
+		x: 50,
+		y: 0
+	};
+	this.health = 100;
+	if(this.dead) {
+		this.dead = false;
+		this.takeAction();
+	}
+}
+
 BasicBox.prototype.update = function() {
 	// if(this.sprite.velocity.y > 0 && this.sprite.velocity.y < 1) {
 	// 	this.sprite.velocity.y = 0;
 	// 	console.log(this.sprite.velocity.y);
 	// }
-
+	if(this.sprite.height < this.defaultHeight) {
+		// restore height
+		this.sprite.height++;
+		this.sprite.y--;
+	}
 };
 
 BasicBox.prototype.setTarget = function(newTarget) {
@@ -173,9 +234,10 @@ BasicBox.prototype.setTarget = function(newTarget) {
 };
 
 BasicBox.prototype.takeAction = function() {
-	if(this.dead) return; //no more actions
+	if(this.dead || !this.sprite.body.collideWorldBounds) return; //no more actions
 
 	var curr = this.currentAction = this.nextAction;
+	console.log(this.name, ': ',curr.name);
 	// find target
 	// TODO: determin fight or flee
 	var diff = this.sprite.x < this.target.sprite.x;
@@ -196,7 +258,7 @@ BasicBox.prototype.takeAction = function() {
 		this.sprite.velocity.x = this.getValue(curr.velocityX, this.direction);
 
 	if(curr.velocityY)
-		this.sprite.velocity.y = this.getValue(curr.velocityY, this.direction);
+		this.sprite.velocity.y = this.getValue(curr.velocityY);
 
 	// nextAction = this.DEFAULT_ACTIONS[action];
 	setTimeout(_.bind(this.takeAction, this),
@@ -230,17 +292,15 @@ BasicBox.prototype.getValue = function(rangeSet, direction) {
 };
 
 BasicBox.prototype.injure = function(force) {
-	this.health -= 12;
+	this.health -= force;
 	this.health = Math.max(0, this.health);
 	this.fear++;
 	this.sprite.animations.play(BasicBox.ANIM_INJURY, 24, false);
 	if(this.health === 0) {
 		this.dead = true;
-		this.sprite.y += 8;
+		console.log(this.sprite.height);
 		this.sprite.velocity.x = 0;
 		this.sprite.velocity.y = 0;
-		this.sprite.body.collideWorldBounds = false;
-		this.sprite.body.gravity.y = 0;
 	}
 };
 
@@ -254,26 +314,18 @@ BasicBox.prototype.endGame = function(won) {
 		this.nextAction = this.actionData['happyDance'];
 };
 
-BasicBox.prototype.setupBox = function() {
-	this.sprite.x = this.spriteX;
-	this.sprite.y = this.spriteY;
-	this.nextAction = BasicBox.DEFAULT_ACTIONS.idle;
-	this.fear = 0;
-	this.gameOver = false;
-	this.sprite.body.collideWorldBounds = true;
-	this.sprite.body.gravity.y = 10;
-	this.sprite.body.bounce.setTo(0.2, 0.4);
-	this.sprite.body.drag = {
-		x: 50,
-		y: 0
-	};
-	this.health = 100;
-	if(this.dead) {
-		this.dead = false;
-		this.takeAction();
-	}
+BasicBox.prototype.restart = function() {
+	this.sprite.height = this.defaultHeight;
+	this.setupBox();
 }
 
-BasicBox.prototype.restart = function() {
-	this.setupBox();
+BasicBox.prototype.stomp = function() {
+	this.sprite.height -= 10;
+	this.sprite.y += 10;
+}
+
+BasicBox.prototype.rebound = function() {
+	console.log('addd rebound')
+	this.nextAction = this.actionData['rebound'];
+	this.takeAction();
 }

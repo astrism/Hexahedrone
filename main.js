@@ -48,10 +48,12 @@
 		if(!gameOver) {
 			game.physics.collide(boxA.sprite, boxB.sprite, onCollide);
 			boxA.update();
-			document.getElementById('boxAAttack').innerHTML = 'move: ' + boxA.currentAction.name;
+			if(boxA.currentAction)
+				document.getElementById('boxAAttack').innerHTML = 'move: ' + boxA.currentAction.name;
 			document.getElementById('boxAHealth').innerHTML = 'health: ' + Math.round(boxA.health);
 			boxB.update();
-			document.getElementById('boxBAttack').innerHTML = 'move: ' + boxB.currentAction.name;
+			if(boxB.currentAction)
+				document.getElementById('boxBAttack').innerHTML = 'move: ' + boxB.currentAction.name;
 			document.getElementById('boxBHealth').innerHTML = 'health: ' + Math.round(boxB.health);
 		} else {
 			game.physics.collide(boxA.sprite, boxB.sprite);
@@ -70,17 +72,31 @@
 			var velA = Math.abs(spriteA.velocity.x) + Math.abs(spriteA.velocity.y);
 			var velB = Math.abs(spriteB.velocity.x) + Math.abs(spriteB.velocity.y);
 			// console.log('a:', Math.round(velA), 'b:', Math.round(velB));
+
 			// injured object is moving faster due to collision?
 			if(velA < velB) {
 				// console.log('injure B');
-				boxB.injure(velA - velB);
+				if(boxA.sprite.bottomLeft.y < boxB.sprite.topLeft.y) {
+					console.log('head stomp on B');
+					boxB.injure(15);
+					boxB.stomp();
+					boxA.rebound();
+				}
+				boxB.injure(5);
 				boxA.charge();
 			} else {
 				// console.log('injure A');
-				boxA.injure(velB - velA);
+				if(boxB.sprite.bottomLeft.y < boxA.sprite.topLeft.y) {
+					console.log('head stomp on A');
+					boxA.injure(15);
+					boxA.stomp();
+					boxB.rebound();
+				}
+				boxA.injure(5);
 				boxB.charge();
 			}
 
+			// death check
 			if(boxA.dead || boxB.dead) {
 				console.log('game over');
 
