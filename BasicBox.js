@@ -47,22 +47,23 @@ BasicBox.DEFAULT_ACTIONS = {
 	'recoil' : {
 		// animation: null,
 		name: 'recoil',
+		next: 'idle',
 		delay: {
 			min: 500,
 			max: 1000
 		},
 		velocityX: {
-			min: 500,
-			max: 500
-		},
-		next: 'idle'
+			min: -50,
+			max: -100
+		}
 	},
 	'rebound' : {
 		// animation: null,
 		name: 'rebound',
+		next: 'idle',
 		delay: {
-			min: 2000,
-			max: 3000
+			min: 7000,
+			max: 1000
 		},
 		velocityX: {
 			min: -500,
@@ -76,6 +77,7 @@ BasicBox.DEFAULT_ACTIONS = {
 	'happyDance' : {
 		// animation: null,
 		name: 'happy dance',
+		next: 'happyDance',
 		delay: {
 			min: 1700,
 			max: 1700
@@ -87,8 +89,7 @@ BasicBox.DEFAULT_ACTIONS = {
 		velocityY: {
 			min: 300,
 			max: 350
-		},
-		next: 'happyDance'
+		}
 	},
 	'jumpBack' : {
 		// animation: null,
@@ -157,7 +158,7 @@ BasicBox.DEFAULT_ACTIONS = {
 			min: 40,
 			max: 50
 		}
-	},
+	}/*,
 	'headstomp' : {
 		// animation: null,
 		name: 'headstomp',
@@ -174,7 +175,7 @@ BasicBox.DEFAULT_ACTIONS = {
 			min: 2000,
 			max: 2200
 		}
-	}
+	}*/
 };
 
 // static methods
@@ -224,7 +225,6 @@ BasicBox.prototype.createWithGame = function(game) {
 BasicBox.prototype.setupBox = function() {
 	this.sprite.x = this.spriteX;
 	this.sprite.y = this.spriteY;
-	this.nextAction = BasicBox.DEFAULT_ACTIONS.idle;
 	this.fear = 0;
 	this.gameOver = false;
 	this.sprite.body.collideWorldBounds = true;
@@ -238,9 +238,10 @@ BasicBox.prototype.setupBox = function() {
 	this.health = 100;
 	if(this.dead) {
 		this.dead = false;
-		this.takeAction(game.time.time);
+		this.takeActionNow('idle');
+	} else {
+		this.nextAction = this.actionData['idle'];
 	}
-
 	this.sprite.animations.play(BasicBox.ANIM_IDLE, 24, false);
 }
 
@@ -298,6 +299,13 @@ BasicBox.prototype.takeAction = function(gt) {
 	this.nextActionTime = gt + this.getValue(curr.delay);
 };
 
+BasicBox.prototype.takeActionNow = function(actionKey) {
+	var action = this.actionData[actionKey];
+	this.nextAction = action;
+	this.nextActionTime = game.time.time;
+	this.takeAction(this.nextActionTime);
+}
+
 BasicBox.prototype.getRandomAttack = function() {
 	var max = this.attackActions.length;
 	var rand = Math.floor(Math.random() * max);
@@ -339,20 +347,20 @@ BasicBox.prototype.injure = function(force) {
 };
 
 BasicBox.prototype.charge = function(force) {
-	console.log('charge', this.name);
+	// console.log('charge', this.name);
 	this.fear--;
 	this.recoil();
 };
 
 BasicBox.prototype.recoil = function() {
 	this.sprite.velocity.x = 0;
-	this.nextAction = this.actionData['recoil'];
+	this.takeActionNow('recoil');
 }
 
 BasicBox.prototype.endGame = function(won) {
 	this.gameOver = true;
 	if(won)
-		this.nextAction = this.actionData['happyDance'];
+		this.takeActionNow('happyDance');
 };
 
 BasicBox.prototype.restart = function() {
@@ -375,6 +383,6 @@ BasicBox.prototype.stomp = function(force) {
 BasicBox.prototype.rebound = function() {
 	console.log('addd rebound');
 	// this.sprite.y -= 100;
-	this.nextAction = this.actionData['rebound'];
-	this.takeAction(game.time.time);
+	this.sprite.velocity.x = this.sprite.velocity.y = 0;
+	this.takeActionNow('rebound');
 }

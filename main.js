@@ -14,7 +14,6 @@ var game = new Phaser.Game(800,
 var SPRITE_FLOOR = 'floor';
 
 function preload() {
-	game.load.image(SPRITE_FLOOR, 'img/Floor.png');
 	BasicBox.preload(game);
 }
 
@@ -74,7 +73,7 @@ function onCollide(spriteA, spriteB) {
 		var velB = Math.abs(spriteB.velocity.x);
 		// console.log('a:', Math.round(velA), 'b:', Math.round(velB));
 
-		if(Math.abs(velA - velB) > 50) {
+		if(Math.abs(velA - velB) > 100) {
 		// console.log('spriteA.velocity.x:', Math.abs(spriteA.velocity.x));
 		// console.log('spriteB.velocity.x:', Math.abs(spriteB.velocity.x));
 		// console.log('veldiff:', Math.abs(velA - velB));
