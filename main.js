@@ -25,8 +25,8 @@ var boxAWins = 0;
 var boxBWins = 0;
 
 function create() {
-	console.log(typeof []);
-	console.log('create');
+	Parse.initialize(CONFIG.PARSE_APP_ID, CONFIG.PARSE_JS_KEY);
+
 	game.stage.backgroundColor = '#FFFFFF';
 	game.stage.scale = 0.5;
 

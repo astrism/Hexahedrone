@@ -185,8 +185,6 @@ BasicBox.preload = function(game) {
 
 // instance methods
 BasicBox.prototype.createWithGame = function(game) {
-	console.log('init basic box');
-
 	//parse actions
 	var actionName;
 	for(actionName in this.actionData){
@@ -272,7 +270,7 @@ BasicBox.prototype.takeAction = function(gt) {
 	if(this.dead) return; //no more actions
 
 	var curr = this.currentAction = this.nextAction;
-	console.log(this.name, ': ',curr.name);
+	// console.log(this.name, ': ',curr.name);
 	// find target
 	// TODO: determin fight or flee
 	var diff = this.sprite.x < this.target.sprite.x;
