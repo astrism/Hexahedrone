@@ -14,6 +14,10 @@ function BasicBox(boxName, originX, originY) {
 	this.gameOver = false;
 	this.defaultWidth = 0;
 	this.defaultHeight = 0;
+	this.nextActionTime = 0;
+	this.target = null;
+	this.stunned = false;
+	this.stunnedTime = 0;
 }
 
 // extend
@@ -24,6 +28,10 @@ BasicBox.prototype.constructor = BasicBox;
 BasicBox.SPRITE_BOX = 'box';
 BasicBox.ANIM_IDLE = 'idle';
 BasicBox.ANIM_IDLE_FRAMES = ['idle/Box_0000_idle'];
+BasicBox.ANIM_DEATH = 'death';
+BasicBox.ANIM_DEATH_FRAMES = ['death/Box_0000_death'];
+BasicBox.ANIM_STUN = 'stun';
+BasicBox.ANIM_STUN_FRAMES = ['stun/Box_0000_stun'];
 BasicBox.ANIM_INJURY = 'injury';
 BasicBox.ANIM_INJURY_FRAMES = ['injury/Box_0001_injury01', 'injury/Box_0002_injury02', 'injury/Box_0003_injury03', 'injury/Box_0004_injury04', 'injury/Box_0005_injury05', 'injury/Box_0006_injury06', 'injury/Box_0007_injury07', 'injury/Box_0008_injury08'];
 BasicBox.ACTION_IDLE = 'idle';
@@ -36,20 +44,33 @@ BasicBox.DEFAULT_ACTIONS = {
 			max: 700
 		}
 	},
+	'recoil' : {
+		// animation: null,
+		name: 'recoil',
+		delay: {
+			min: 500,
+			max: 1000
+		},
+		velocityX: {
+			min: 500,
+			max: 500
+		},
+		next: 'idle'
+	},
 	'rebound' : {
 		// animation: null,
 		name: 'rebound',
 		delay: {
 			min: 2000,
-			max: 2000
+			max: 3000
 		},
 		velocityX: {
 			min: -500,
 			max: 500
 		},
 		velocityY: {
-			min: 800,
-			max: 1500
+			min: 2000,
+			max: 3000
 		}
 	},
 	'happyDance' : {
@@ -146,12 +167,12 @@ BasicBox.DEFAULT_ACTIONS = {
 			max: 1400
 		},
 		velocityX: {
-			min: 50,
-			max: 100
+			min: 100,
+			max: 150
 		},
 		velocityY: {
-			min: 1800,
-			max: 2000
+			min: 2000,
+			max: 2200
 		}
 	}
 };
@@ -182,12 +203,15 @@ BasicBox.prototype.createWithGame = function(game) {
 	this.defaultWidth = this.sprite.width;
 	this.defaultHeight = this.sprite.height;
 	this.spriteY = game.world.height - this.defaultHeight;
-	this.setupBox();
 
 	//setup sprite animations
 	this.sprite.animations.add(BasicBox.ANIM_IDLE, BasicBox.ANIM_IDLE_FRAMES, 24, false, false);
 	this.sprite.animations.add(BasicBox.ANIM_INJURY, BasicBox.ANIM_INJURY_FRAMES, 24, false, false);
-	this.sprite.animations.play(BasicBox.ANIM_IDLE, 24, false);
+	this.sprite.animations.add(BasicBox.ANIM_DEATH, BasicBox.ANIM_DEATH_FRAMES, 24, false, false);
+	this.sprite.animations.add(BasicBox.ANIM_STUN, BasicBox.ANIM_STUN_FRAMES, 24, false, false);
+
+	// set defaults
+	this.setupBox();
 
 	// create text
 	var pos = this.sprite.width * 0.5;
@@ -206,34 +230,44 @@ BasicBox.prototype.setupBox = function() {
 	this.sprite.body.collideWorldBounds = true;
 	this.sprite.body.gravity.y = 80;
 	this.sprite.body.bounce.setTo(0.2, 0.4);
+	this.sprite.body.angularDamping = 100;
 	this.sprite.body.drag = {
-		x: 50,
+		x: 400,
 		y: 0
 	};
 	this.health = 100;
 	if(this.dead) {
 		this.dead = false;
-		this.takeAction();
+		this.takeAction(game.time.time);
 	}
+
+	this.sprite.animations.play(BasicBox.ANIM_IDLE, 24, false);
 }
 
-BasicBox.prototype.update = function() {
+BasicBox.prototype.update = function(gt) {
 	// if(this.sprite.velocity.y > 0 && this.sprite.velocity.y < 1) {
 	// 	this.sprite.velocity.y = 0;
 	// 	console.log(this.sprite.velocity.y);
 	// }
-	if(this.sprite.height < this.defaultHeight) {
-		// restore height
-		this.sprite.height++;
-		this.sprite.y--;
+	// if(this.sprite.height < this.defaultHeight) {
+	// 	// restore height
+	// 	this.sprite.height++;
+	// 	this.sprite.y--;
+	// }
+	if(this.stunned && gt > this.stunnedTime) {
+		this.stunned = false;
+		this.sprite.animations.play(BasicBox.ANIM_IDLE, 24, false);
 	}
+
+	if(this.target && gt >= this.nextActionTime)
+		this.takeAction(gt);
 };
 
 BasicBox.prototype.setTarget = function(newTarget) {
 	this.target = newTarget;
 };
 
-BasicBox.prototype.takeAction = function() {
+BasicBox.prototype.takeAction = function(gt) {
 	if(this.dead) return; //no more actions
 
 	var curr = this.currentAction = this.nextAction;
@@ -246,12 +280,6 @@ BasicBox.prototype.takeAction = function() {
 	else
 		this.direction = -1;
 
-	//assign next or random
-	if(curr.next){
-		this.nextAction = this.actionData[curr.next];
-	} else {
-		this.nextAction = this.getRandomAttack();
-	}
 
 	// assign velocities
 	if(curr.velocityX)
@@ -260,10 +288,14 @@ BasicBox.prototype.takeAction = function() {
 	if(curr.velocityY)
 		this.sprite.velocity.y = this.getValue(curr.velocityY);
 
-	// nextAction = this.DEFAULT_ACTIONS[action];
-	setTimeout(_.bind(this.takeAction, this),
-				this.getValue(curr.delay)
-				);
+	//assign next or random
+	if(curr.next){
+		this.nextAction = this.actionData[curr.next];
+	} else {
+		this.nextAction = this.getRandomAttack();
+	}
+	// set delay
+	this.nextActionTime = gt + this.getValue(curr.delay);
 };
 
 BasicBox.prototype.getRandomAttack = function() {
@@ -295,9 +327,11 @@ BasicBox.prototype.injure = function(force) {
 	this.health -= force;
 	this.health = Math.max(0, this.health);
 	this.fear++;
-	this.sprite.animations.play(BasicBox.ANIM_INJURY, 24, false);
+	if(!this.stunned)
+		this.sprite.animations.play(BasicBox.ANIM_INJURY, 24, false);
 	if(this.health === 0) {
 		this.dead = true;
+		this.sprite.animations.play(BasicBox.ANIM_DEATH, 24, false);
 		console.log(this.sprite.height);
 		this.sprite.velocity.x = 0;
 		this.sprite.velocity.y = 0;
@@ -305,8 +339,15 @@ BasicBox.prototype.injure = function(force) {
 };
 
 BasicBox.prototype.charge = function(force) {
+	console.log('charge', this.name);
 	this.fear--;
+	this.recoil();
 };
+
+BasicBox.prototype.recoil = function() {
+	this.sprite.velocity.x = 0;
+	this.nextAction = this.actionData['recoil'];
+}
 
 BasicBox.prototype.endGame = function(won) {
 	this.gameOver = true;
@@ -315,17 +356,25 @@ BasicBox.prototype.endGame = function(won) {
 };
 
 BasicBox.prototype.restart = function() {
-	this.sprite.height = this.defaultHeight;
+	// this.sprite.height = this.defaultHeight;
 	this.setupBox();
 }
 
-BasicBox.prototype.stomp = function() {
-	this.sprite.height -= 10;
-	this.sprite.y += 10;
+BasicBox.prototype.stomp = function(force) {
+	console.log('stomp');
+	if(!this.stunned) {
+		this.stunned = true;
+		this.injure(force);
+		this.stunnedTime = game.time.time + 1000;
+		this.sprite.animations.play(BasicBox.ANIM_STUN, 24, false);
+		// this.sprite.height -= 10;
+		// this.sprite.y += 10;
+	}
 }
 
 BasicBox.prototype.rebound = function() {
-	console.log('addd rebound')
+	console.log('addd rebound');
+	// this.sprite.y -= 100;
 	this.nextAction = this.actionData['rebound'];
-	this.takeAction();
+	this.takeAction(game.time.time);
 }
