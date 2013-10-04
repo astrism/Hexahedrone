@@ -1,6 +1,6 @@
 Hexahedrone: Fighting Orthographic cube fights
 ===========
 
-Setup
-# Create config.js based on config.example
-# Add parse keys
+# Setup
+1. Create config.js based on config.example
+2. Add parse keys
