@@ -1,0 +1,20 @@
+{
+  "name": "Hexahedrone",
+  "version": "0.0.0",
+  "homepage": "https://github.com/astrism/Hexahedrone",
+  "authors": [
+    "Grant H <ghelton@gmail.com>"
+  ],
+  "description": "Orthographic cube fights",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "~1.5.2"
+  }
+}
