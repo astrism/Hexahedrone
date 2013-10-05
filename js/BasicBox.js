@@ -18,6 +18,7 @@ function BasicBox(boxName, originX, originY) {
 	this.target = null;
 	this.stunned = false;
 	this.stunnedTime = 0;
+	this.currentTime = 0;
 }
 
 // extend
@@ -244,6 +245,7 @@ BasicBox.prototype.setupBox = function() {
 }
 
 BasicBox.prototype.update = function(gt) {
+	this.currentTime = gt;
 	// if(this.sprite.velocity.y > 0 && this.sprite.velocity.y < 1) {
 	// 	this.sprite.velocity.y = 0;
 	// 	console.log(this.sprite.velocity.y);
@@ -253,20 +255,20 @@ BasicBox.prototype.update = function(gt) {
 	// 	this.sprite.height++;
 	// 	this.sprite.y--;
 	// }
-	if(this.stunned && gt > this.stunnedTime) {
+	if(this.stunned && this.currentTime > this.stunnedTime) {
 		this.stunned = false;
 		this.sprite.animations.play(BasicBox.ANIM_IDLE, 24, false);
 	}
 
-	if(this.target && gt >= this.nextActionTime)
-		this.takeAction(gt);
+	if(this.target && this.currentTime >= this.nextActionTime)
+		this.takeAction();
 };
 
 BasicBox.prototype.setTarget = function(newTarget) {
 	this.target = newTarget;
 };
 
-BasicBox.prototype.takeAction = function(gt) {
+BasicBox.prototype.takeAction = function() {
 	if(this.dead) return; //no more actions
 
 	var curr = this.currentAction = this.nextAction;
@@ -294,13 +296,13 @@ BasicBox.prototype.takeAction = function(gt) {
 		this.nextAction = this.getRandomAttack();
 	}
 	// set delay
-	this.nextActionTime = gt + this.getValue(curr.delay);
+	this.nextActionTime = this.currentTime + this.getValue(curr.delay);
 };
 
 BasicBox.prototype.takeActionNow = function(actionKey) {
 	var action = this.actionData[actionKey];
 	this.nextAction = action;
-	this.nextActionTime = game.time.time;
+	this.nextActionTime = this.currentTime;
 	this.takeAction(this.nextActionTime);
 }
 
@@ -371,7 +373,7 @@ BasicBox.prototype.stomp = function(force) {
 	if(!this.stunned) {
 		this.stunned = true;
 		this.injure(force);
-		this.stunnedTime = game.time.time + 1000;
+		this.stunnedTime = this.currentTime + 1000;
 		this.sprite.animations.play(BasicBox.ANIM_STUN, 24, false);
 		// this.sprite.height -= 10;
 		// this.sprite.y += 10;
