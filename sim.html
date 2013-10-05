@@ -8,6 +8,10 @@
 		.separator {
 			color: #777;
 		}
+
+		.pause {
+			float: right;
+		}
 	</style>
 	<script src="js/config.js"></script>
 
@@ -30,6 +34,15 @@
 		<span id="boxBAttack">move: </span>
 	</div>
 
-	<div onclick="togglePause()" style="float: right">pause</div>
+	<div ng-click="togglePause()" 
+			class="pause"
+			ng-hide="paused">
+			pause
+	</div>
+	<div ng-click="togglePause()" 
+			class="pause"
+			ng-show="paused">
+			unpause
+	</div>
 	<div id="sim"></div>
 </div>
