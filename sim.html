@@ -1,7 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<title>Hexahedrone: orthographic cube fights</title>
+<div>
 	<style type="text/css">
 		body {
 			font-family: sans-serif;
@@ -12,33 +9,27 @@
 			color: #777;
 		}
 	</style>
-	<script src="http://www.parsecdn.com/js/parse-1.2.12.min.js"></script>
 	<script src="js/config.js"></script>
-	
+
 	<!-- Vendor JS -->
 	<script src="js/vendor/phaser.js"></script>
-	<script src="js/vendor/underscore-min.js"></script>
 
 	<!-- App Files -->
 	<script src="js/Box.js"></script>
 	<script src="js/BasicBox.js"></script>
-	<script src="js/main.js"></script>
-</head>
-<body style="background:black; color: white">
-<div>
-	Drone A <span class="separator">|</span>
-	<span id="boxAWins">wins: 0</span> <span class="separator">|</span>
-	<span id="boxAHealth">health: </span> <span class="separator">|</span>
-	<span id="boxAAttack">move: </span>
-</div>
-<div>
-	Drone B <span class="separator">|</span>
-	<span id="boxBWins">wins: 0</span> <span class="separator">|</span>
-	<span id="boxBHealth">health: </span> <span class="separator">|</span>
-	<span id="boxBAttack">move: </span>
-</div>
+	<div>
+		Drone A <span class="separator">|</span>
+		<span id="boxAWins">wins: 0</span> <span class="separator">|</span>
+		<span id="boxAHealth">health: </span> <span class="separator">|</span>
+		<span id="boxAAttack">move: </span>
+	</div>
+	<div>
+		Drone B <span class="separator">|</span>
+		<span id="boxBWins">wins: 0</span> <span class="separator">|</span>
+		<span id="boxBHealth">health: </span> <span class="separator">|</span>
+		<span id="boxBAttack">move: </span>
+	</div>
 
-<div onclick="togglePause()" style="float: right">pause</div>
-
-</body>
-</html>
+	<div onclick="togglePause()" style="float: right">pause</div>
+	<div id="sim"></div>
+</div>
