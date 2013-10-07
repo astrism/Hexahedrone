@@ -1,0 +1,40 @@
+<div>
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+			font-size: 20px;
+		}
+
+		.separator {
+			color: #777;
+		}
+
+		.pause {
+			float: right;
+		}
+	</style>
+	<div>
+		Drone A <span class="separator">|</span>
+		<span id="boxAWins">wins: 0</span> <span class="separator">|</span>
+		<span id="boxAHealth">health: </span> <span class="separator">|</span>
+		<span id="boxAAttack">move: </span>
+	</div>
+	<div>
+		Drone B <span class="separator">|</span>
+		<span id="boxBWins">wins: 0</span> <span class="separator">|</span>
+		<span id="boxBHealth">health: </span> <span class="separator">|</span>
+		<span id="boxBAttack">move: </span>
+	</div>
+
+	<div ng-click="togglePause()" 
+			class="pause"
+			ng-hide="paused">
+			pause
+	</div>
+	<div ng-click="togglePause()" 
+			class="pause"
+			ng-show="paused">
+			unpause
+	</div>
+	<div id="sim"></div>
+</div>
