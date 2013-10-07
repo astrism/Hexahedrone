@@ -57,13 +57,13 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 
 			// The Reaping
 			function loadHexes(hexes) {
-				var aData = hexes.models[0].get('actions');
+				var aData = hexes.models[0];
 				var yPos = $scope.game.world.height - 100;
-				$scope.boxA = new BasicBox('A', 200, yPos, aData);
+				$scope.boxA = new BasicBox(aData.get('name'), 200, yPos, aData.get('actions'));
 				$scope.boxA.createWithGame($scope.game);
 
-				var bData = hexes.models[0].get('actions');
-				$scope.boxB = new BasicBox('B', $scope.game.world.width - 300, yPos, bData);
+				var bData = hexes.models[1];
+				$scope.boxB = new BasicBox(bData.get('name'), $scope.game.world.width - 300, yPos, bData.get('actions'));
 				$scope.boxB.createWithGame($scope.game);
 
 				// fued
