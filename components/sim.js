@@ -1,7 +1,7 @@
-hexahedrone.directive('sim', function() {
+hexahedrone.directive('sim', ['HexService', function(HexService) {
 	return {
 		restrict: 'E', /* E: Element, C: Class, A: Attribute M: Comment */
-		templateUrl: 'sim.html',
+		templateUrl: 'components/sim.html',
 		replace: true,
 		link: function($scope, $element) {
 			requirejs(['vn/phaser',
@@ -26,7 +26,7 @@ hexahedrone.directive('sim', function() {
 												render: render 
 											}
 										);
-				$scope.$watch('game.paused', onPauseChange);
+				$scope.$watch('game.paused', $scope.onPauseChange);
 			}
 
 			// Constants
@@ -45,21 +45,33 @@ hexahedrone.directive('sim', function() {
 			$scope.boxBWins = 0;
 
 			function create() {
-				Parse.initialize(CONFIG.PARSE_APP_ID, CONFIG.PARSE_JS_KEY);
 
 				$scope.game.stage.backgroundColor = '#FFFFFF';
 				$scope.game.stage.scale = 0.5;
+				$scope.game.paused = true;
 
+				var hexes = new HexService.collection();
+				var hexesPromise = hexes.load();
+				hexesPromise.then(loadHexes)
+			}
+
+			// The Reaping
+			function loadHexes(hexes) {
+				var aData = hexes.models[0].get('actions');
 				var yPos = $scope.game.world.height - 100;
-				$scope.boxA = new BasicBox('A', 200, yPos);
+				$scope.boxA = new BasicBox('A', 200, yPos, aData);
 				$scope.boxA.createWithGame($scope.game);
 
-				$scope.boxB = new BasicBox('B', $scope.game.world.width - 300, yPos);
+				var bData = hexes.models[0].get('actions');
+				$scope.boxB = new BasicBox('B', $scope.game.world.width - 300, yPos, bData);
 				$scope.boxB.createWithGame($scope.game);
 
 				// fued
 				$scope.boxA.setTarget($scope.boxB);
 				$scope.boxB.setTarget($scope.boxA);
+
+				// start game
+				$scope.game.paused = false;
 			}
 
 			function update() {
@@ -154,14 +166,24 @@ hexahedrone.directive('sim', function() {
 				$scope.gameOver = false;
 			}
 
+			$scope.$on('$destroy', $scope.onDestroy);
+		},
+		controller: function($scope, $element) {
 
 			$scope.togglePause = function() {
 				$scope.game.paused = !$scope.game.paused;
 			}
 
-			function onPauseChange(newValue, oldValue){
+			$scope.onPauseChange = function(newValue, oldValue){
 				$scope.paused = newValue;
+			}
+
+			$scope.onDestroy = function() {
+				$scope.game.paused = true;
+				$scope.game.raf.stop();
+				$scope.game.destroy();
+				console.log('destroyed sim');
 			}
 		}
 	}
-});
+}]);

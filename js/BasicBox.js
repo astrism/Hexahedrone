@@ -1,10 +1,13 @@
-function BasicBox(boxName, originX, originY) {
+function BasicBox(boxName, originX, originY, actionData) {
 	Box.call(this, originX, originY);
 
 	this.name = boxName;
 	this.currentAction = null;
 	this.nextAction = BasicBox.DEFAULT_ACTIONS.idle;
-	this.actionData = BasicBox.DEFAULT_ACTIONS;
+	if(actionData)
+		this.actionData = angular.extend(BasicBox.DEFAULT_ACTIONS, actionData);
+	else
+		this.actionData = BasicBox.DEFAULT_ACTIONS;
 	this.attackActions = [];
 	this.dodgeActions = [];
 	this.direction = 1;
@@ -57,126 +60,7 @@ BasicBox.DEFAULT_ACTIONS = {
 			min: -50,
 			max: -100
 		}
-	},
-	'rebound' : {
-		// animation: null,
-		name: 'rebound',
-		next: 'idle',
-		delay: {
-			min: 7000,
-			max: 1000
-		},
-		velocityX: {
-			min: -500,
-			max: 500
-		},
-		velocityY: {
-			min: 2000,
-			max: 3000
-		}
-	},
-	'happyDance' : {
-		// animation: null,
-		name: 'happy dance',
-		next: 'happyDance',
-		delay: {
-			min: 1700,
-			max: 1700
-		},
-		velocityX: {
-			min: -10,
-			max: 10
-		},
-		velocityY: {
-			min: 300,
-			max: 350
-		}
-	},
-	'jumpBack' : {
-		// animation: null,
-		name: 'jump back',
-		type: 'dodge',
-		delay: {
-			min: 1200,
-			max: 2000
-		},
-		velocityX: {
-			min: -100,
-			max: -250
-		},
-		velocityY: {
-			min: 100,
-			max: 200
-		}
-	},
-	'jumpAhead' : {
-		// animation: null,
-		name: 'jump ahead',
-		type: 'dodge',
-		delay: {
-			min: 1200,
-			max: 2000
-		},
-		velocityX: {
-			min: 100,
-			max: 250
-		},
-		velocityY: {
-			min: 100,
-			max: 200
-		}
-	},
-	'dash' : {
-		// animation: null,
-		name: 'dash',
-		type: 'attack',
-		delay: {
-			min: 700,
-			max: 1000
-		},
-		velocityX: {
-			min: 100,
-			max: 350
-		},
-		velocityY: {
-			min: 10,
-			max: 20
-		}
-	},
-	'jumpDash' : {
-		// animation: null,
-		name: 'jumpdash',
-		type: 'attack',
-		delay: {
-			min: 700,
-			max: 1000
-		},
-		velocityX: {
-			min: 100,
-			max: 350
-		},
-		velocityY: {
-			min: 40,
-			max: 50
-		}
-	}/*,
-	'headstomp' : {
-		// animation: null,
-		name: 'headstomp',
-		type: 'attack',
-		delay: {
-			min: 1200,
-			max: 1400
-		},
-		velocityX: {
-			min: 100,
-			max: 150
-		},
-		velocityY: {
-			min: 2000,
-			max: 2200
-		}
-	}*/
+	}
 };
 
 // static methods
@@ -295,6 +179,7 @@ BasicBox.prototype.takeAction = function() {
 	} else {
 		this.nextAction = this.getRandomAttack();
 	}
+
 	// set delay
 	this.nextActionTime = this.currentTime + this.getValue(curr.delay);
 };
@@ -311,7 +196,10 @@ BasicBox.prototype.getRandomAttack = function() {
 	var rand = Math.floor(Math.random() * max);
 	var actionKey = this.attackActions[rand];
 	var actionData = this.actionData[actionKey];
-	if(!actionData) throw new Error('couldnt find action!');
+	if(!actionData) {
+		console.log('couldnt find random action');
+		return BasicBox.DEFAULT_ACTIONS.idle;
+	}
 	return actionData;
 };
 
@@ -320,7 +208,10 @@ BasicBox.prototype.getRandomDodge = function() {
 	var rand = Math.floor(Math.random() * max);
 	var actionKey = this.attackActions[rand];
 	var actionData = this.actionData[actionKey];
-	if(!actionData) throw new Error('couldnt find action!');
+	if(!actionData) {
+		console.log('couldnt find random dodge');
+		return BasicBox.DEFAULT_ACTIONS.idle;
+	};
 	return actionData;
 };
 
