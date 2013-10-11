@@ -39,6 +39,8 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 			// objects
 			$scope.paused = false;
 			$scope.gameOver = false;
+			$scope.boxes = [];
+			$scope.boxesBySprite = {};
 			$scope.boxA;
 			$scope.boxB;
 			$scope.boxAWins = 0;
@@ -50,45 +52,93 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 				$scope.game.stage.scale = 0.5;
 				$scope.game.paused = true;
 
-				var hexes = new HexService.collection();
-				var hexesPromise = hexes.load();
-				hexesPromise.then(loadHexes)
+				loadHexes();
 			}
 
+			// temporary locations till we have arenas
+			var locations = [
+				200,
+				600,
+				400,
+				500,
+				300
+			]
+
+			function loadHexes() {
+				var hexes = new HexService.collection();
+				var hexesPromise = hexes.load();
+				hexesPromise.then(onHexesLoaded);
+			}
 			// The Reaping
-			function loadHexes(hexes) {
-				var aData = hexes.models[0];
-				var yPos = $scope.game.world.height - 100;
-				$scope.boxA = new BasicBox(aData.get('name'), 200, yPos, aData.get('actions'));
-				$scope.boxA.createWithGame($scope.game);
+			function onHexesLoaded(hexes) {
+				var playersPerMatch = 2,
+				// put them on the floor, TODO: Find a better solution for positioning on the floor
+				yPos = $scope.game.world.height - 100,
+				// grab a copy of the parse data
+				availableHexes = hexes.models.slice(),
+				rand, 
+				data, 
+				box;
 
-				var bData = hexes.models[1];
-				$scope.boxB = new BasicBox(bData.get('name'), $scope.game.world.width - 300, yPos, bData.get('actions'));
-				$scope.boxB.createWithGame($scope.game);
+				for(var i= 0; i < playersPerMatch; i++) {
+					// choose/create random piece from selection of available pieces
+					rand = _.random(availableHexes.length - 1);
+					data = availableHexes[rand];
+					box = new BasicBox(data.get('name'), locations[i], yPos, data.get('actions'));
+					// initialize
+					box.createWithGame($scope.game);
+					// add to list of boxes
+					$scope.boxes.push(box);
+					// remove the chosen piece
+					availableHexes.splice(rand, 1);
 
-				// fued
-				$scope.boxA.setTarget($scope.boxB);
-				$scope.boxB.setTarget($scope.boxA);
+					if(availableHexes.length === 0)
+						break;
+				}
+
+				if($scope.boxes.length > 1) {
+					for(var i = 0; i < $scope.boxes.length; i++)
+					{
+						var box = $scope.boxes[i];
+						var opponent = randOpponent(box);
+						box.setTarget(opponent);
+						$scope.boxesBySprite[box.sprite] = box;
+					}
+				}
 
 				// start game
 				$scope.game.paused = false;
 			}
 
+			// pick random opponent who is not the innocent
+			function randOpponent(innocent) {
+				var rand = _.random($scope.boxes.length - 2);
+				var innocentIndex = $scope.boxes.indexOf(innocent);
+				var opponent;
+				if(rand >= innocentIndex)
+					opponent = $scope.boxes[rand + 1];
+				else
+					opponent = $scope.boxes[rand];
+				if(opponent)
+					return opponent;
+				else
+					throw new Error('cant find opponent');
+			}
+
 			function update() {
-				var gt = $scope.game.time.time
+				var gt = $scope.game.time.time;
 				if(!$scope.gameOver) {
 					// fighter collisions
-					$scope.game.physics.collide($scope.boxA.sprite, $scope.boxB.sprite, onCollide);
-					$scope.boxA.update(gt);
-					if($scope.boxA.currentAction)
-						document.getElementById('boxAAttack').innerHTML = 'move: ' + $scope.boxA.currentAction.name;
-					document.getElementById('boxAHealth').innerHTML = 'health: ' + Math.round($scope.boxA.health);
-					$scope.boxB.update(gt);
-					if($scope.boxB.currentAction)
-						document.getElementById('boxBAttack').innerHTML = 'move: ' + $scope.boxB.currentAction.name;
-					document.getElementById('boxBHealth').innerHTML = 'health: ' + Math.round($scope.boxB.health);
+					$scope.game.physics.collide($scope.boxes[0].sprite, $scope.boxes[1].sprite, onCollide);
+
+					var box;
+					for(var i = 0; i < $scope.boxes.length; i++)
+					{
+						box = $scope.boxes[i];
+						box.update(gt);
+					}
 				} else {
-					$scope.game.physics.collide($scope.boxA.sprite, $scope.boxB.sprite);
+					$scope.game.physics.collide($scope.boxes[0].sprite, $scope.boxes[1].sprite);
 				}
 			}
 
@@ -110,43 +160,45 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 					// console.log('spriteB.velocity.x:', Math.abs(spriteB.velocity.x));
 					// console.log('veldiff:', Math.abs(velA - velB));
 
+						var boxA = $scope.boxesBySprite[spriteA];
+						var boxB = $scope.boxesBySprite[spriteB];
 						// injured object is moving faster due to collision?
 						if(velA < velB) {
 							// console.log('injure B');
-							if($scope.boxA.sprite.bottomLeft.y < $scope.boxB.sprite.topLeft.y) {
+							if(spriteA.bottomLeft.y < spriteB.topLeft.y) {
 								console.log('head stomp on B');
-								$scope.boxA.rebound();
-								$scope.boxB.stomp(15);
+								boxA.rebound();
+								boxB.stomp(15);
 							}
 							console.log('injure B');
-							$scope.boxB.injure(5);
-							$scope.boxA.charge();
+							boxB.injure(5);
+							boxA.charge();
 						} else {
 							// console.log('injure A');
-							if($scope.boxB.sprite.bottomLeft.y < $scope.boxA.sprite.topLeft.y) {
+							if(spriteB.bottomLeft.y < spriteA.topLeft.y) {
 								console.log('head stomp on A');
-								$scope.boxB.rebound();
-								$scope.boxA.stomp(15);
+								boxB.rebound();
+								boxA.stomp(15);
 							}
 							console.log('injure A');
-							$scope.boxA.injure(5);
-							$scope.boxB.charge();
+							boxA.injure(5);
+							boxB.charge();
 						}
 
 						// death check
-						if($scope.boxA.dead || $scope.boxB.dead) {
+						if(boxA.dead || boxB.dead) {
 							console.log('game over');
 
 							// notify box
-							$scope.boxA.endGame($scope.boxB.dead);
-							$scope.boxB.endGame($scope.boxA.dead);
+							boxA.endGame(boxB.dead);
+							boxB.endGame(boxA.dead);
 
 							//record win
-							if($scope.boxB.dead) {
+							if(boxB.dead) {
 								$scope.boxAWins++;
 								document.getElementById('boxAWins').innerHTML = 'wins: ' + $scope.boxAWins;
 							}
-							if($scope.boxA.dead) {
+							if(boxA.dead) {
 								$scope.boxAWins++;
 								document.getElementById('boxBWins').innerHTML = 'wins: ' + $scope.boxAWins;
 							}
@@ -160,8 +212,12 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 			}
 
 			function startNewBattle() {
-				$scope.boxA.restart();
-				$scope.boxB.restart();
+				$scope.game.paused = true;
+				for(var i= 0; i < $scope.boxes.length; i++)
+					$scope.boxes[i].destroy();
+				$scope.boxes = [];
+				$scope.boxesBySprite = {};
+				loadHexes();
 
 				$scope.gameOver = false;
 			}

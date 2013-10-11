@@ -129,6 +129,7 @@ BasicBox.prototype.setupBox = function() {
 }
 
 BasicBox.prototype.update = function(gt) {
+	// console.log(gt);
 	this.currentTime = gt;
 	// if(this.sprite.velocity.y > 0 && this.sprite.velocity.y < 1) {
 	// 	this.sprite.velocity.y = 0;
@@ -149,6 +150,7 @@ BasicBox.prototype.update = function(gt) {
 };
 
 BasicBox.prototype.setTarget = function(newTarget) {
+	console.log('newTarget.sprite:', newTarget.sprite);
 	this.target = newTarget;
 };
 
@@ -276,4 +278,14 @@ BasicBox.prototype.rebound = function() {
 	// this.sprite.y -= 100;
 	this.sprite.velocity.x = this.sprite.velocity.y = 0;
 	this.takeActionNow('rebound');
+}
+
+BasicBox.prototype.destroy = function() {
+	this.sprite.kill();
+	this.target = null;
+	this.actionData = null;
+	this.nextAction = null;
+	this.currentAction = null;
+	this.attackActions = [];
+	this.dodgeActions = [];
 }
