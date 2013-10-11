@@ -13,17 +13,10 @@
 			float: right;
 		}
 	</style>
-	<div>
-		Drone A <span class="separator">|</span>
-		<span id="boxAWins">wins: 0</span> <span class="separator">|</span>
-		<span id="boxAHealth">health: </span> <span class="separator">|</span>
-		<span id="boxAAttack">move: </span>
-	</div>
-	<div>
-		Drone B <span class="separator">|</span>
-		<span id="boxBWins">wins: 0</span> <span class="separator">|</span>
-		<span id="boxBHealth">health: </span> <span class="separator">|</span>
-		<span id="boxBAttack">move: </span>
+	<div ng-repeat="box in boxes">
+		Drone {{box.name}} <span class="separator">|</span>
+		<span>health: {{box.health}}</span> <span class="separator">|</span>
+		<span>move: {{box.currentAction.name}}</span>
 	</div>
 
 	<div ng-click="togglePause()" 

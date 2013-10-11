@@ -43,8 +43,6 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 			$scope.boxesBySprite = {};
 			$scope.boxA;
 			$scope.boxB;
-			$scope.boxAWins = 0;
-			$scope.boxBWins = 0;
 
 			function create() {
 
@@ -193,15 +191,6 @@ hexahedrone.directive('sim', ['HexService', function(HexService) {
 							boxA.endGame(boxB.dead);
 							boxB.endGame(boxA.dead);
 
-							//record win
-							if(boxB.dead) {
-								$scope.boxAWins++;
-								document.getElementById('boxAWins').innerHTML = 'wins: ' + $scope.boxAWins;
-							}
-							if(boxA.dead) {
-								$scope.boxAWins++;
-								document.getElementById('boxBWins').innerHTML = 'wins: ' + $scope.boxAWins;
-							}
 							$scope.gameOver = true;
 
 							// timer for next battle
