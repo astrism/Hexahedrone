@@ -5,7 +5,8 @@ require( [
 	'app',
 	'routes',
 	'router',
-	'cp/sim'
+	'cp/sim',
+	'cp/stats'
 	], 
 	function(angular, Parse, _, app) {
 		'use strict';
