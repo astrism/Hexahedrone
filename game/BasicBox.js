@@ -1,5 +1,5 @@
 define([
-	'Box'
+	'gm/Box'
 	],
 	function(Box) {
 		function BasicBox(id, boxName, originX, originY, actionData) {

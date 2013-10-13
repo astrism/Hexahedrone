@@ -19,23 +19,7 @@ define([
 		// });
 		$stateProvider.state('sim', {
 			url: "/sim",
-			templateUrl: "views/simView.html",
-			resolve: {
-				require: function($q, $rootScope) {
-					var deferred = $q.defer();
-					require([
-						'vn/phaser',
-						'BasicBox'
-						],
-						function(phaser, BasicBox) {
-							$rootScope.$apply(function() {
-								deferred.resolve('Hello!');
-							});
-						}
-					);
-					return deferred.promise;
-				}
-			}
+			templateUrl: "views/simView.html"
 		});
 		$stateProvider.state('stats', {
 			url: "/stats",

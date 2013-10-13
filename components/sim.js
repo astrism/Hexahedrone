@@ -1,9 +1,8 @@
 define([
 	'app',
-	'dt/Hex',
-	'BasicBox'
+	'dt/Hex'
 	],
-	function(app, Hex, BasicBox) {
+	function(app) {
 
 		app.directive('sim', ['HexService', function(HexService) {
 			return {
@@ -11,7 +10,17 @@ define([
 				templateUrl: 'components/sim.html',
 				replace: true,
 				link: function($scope, $element) {
-					initGame();
+					var BasicBox, Phaser;
+					require([
+						'vn/phaser',
+						'gm/BasicBox'
+						],
+						function(PhaserDef, BasicBoxDef) {
+							Phaser = PhaserDef;
+							BasicBox = BasicBoxDef;
+							initGame();
+						}
+					);
 
 					function initGame() {
 						//loaded and can be used here now.
