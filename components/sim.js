@@ -1,7 +1,9 @@
 define([
-	'app'
-	], 
-	function(app) {
+	'app',
+	'dt/Hex',
+	'BasicBox'
+	],
+	function(app, Hex, BasicBox) {
 
 		app.directive('sim', ['HexService', function(HexService) {
 			return {
