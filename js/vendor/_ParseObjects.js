@@ -3,7 +3,7 @@ define([
 	], 
 	function(angular) {
 
-		angular.module('ExternalDataServices',[]) 
+		angular.module('ExternalDataServices',[])
 
 		.factory('ParseAbstractService', ['ParseQueryAngular', function(ParseQueryAngular) {
 			/********
