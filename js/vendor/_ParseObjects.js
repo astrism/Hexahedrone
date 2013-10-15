@@ -28,8 +28,8 @@ define([
 
 			var collection = function(originalClass){
 				originalClass.prototype = _.extend(originalClass.prototype,{
-					load:function() {
-						return ParseQueryAngular(this,{functionToCall:"fetch"});
+					load:function(options) {
+						return ParseQueryAngular(this, angular.extend({functionToCall:"fetch"}, options));
 					}
 				});
 				return originalClass;

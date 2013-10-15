@@ -2,3 +2,56 @@ body {
 	background: black;
 	color: white;
 }
+
+/* Basic Grid Style */
+
+.gridStyle {
+	height: 1000px
+}
+
+.ngGrid {
+	background-color: #000;
+}
+
+.ngTopPanel {
+	background-color: #333;
+}
+
+.ngRow.odd {
+	background-color: #666;
+}
+.ngRow.even {
+	background-color: #999;
+}
+.ngRow.selected {
+	background-color: #AAA;
+}
+
+.ngVerticalBarVisible {
+	width: 0;
+}
+
+/* Stats Colors */
+.headerLeftCorner {
+	background-color: #BB0000;
+}
+
+.ngRow.odd .cellLeftCorner {
+	background-color: #BB0000;
+}
+
+.ngRow.even .cellLeftCorner {
+	background-color: #DD0000;
+}
+
+.headerRightCorner {
+	background-color: #0000BB;
+}
+
+.ngRow.odd .cellRightCorner {
+	background-color: #0000BB;
+}
+
+.ngRow.even .cellRightCorner {
+	background-color: #0000DD;
+}
