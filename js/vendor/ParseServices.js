@@ -1,35 +1,42 @@
-angular.module('ParseServices', [])
+define([
+	'angular'
+	], 
+	function(angular) {
 
-.factory('ExtendParseSDK', ['ParseAbstractService', function(ParseAbstractService) {
+		angular.module('ParseServices', [])
 
-	Parse.Object.extendAngular = function(options) {
-		return ParseAbstractService.EnhanceObject(Parse.Object.extend(options));
-	};
+		.factory('ExtendParseSDK', ['ParseAbstractService', function(ParseAbstractService) {
 
-	Parse.Collection.extendAngular = function(options) {
-		return ParseAbstractService.EnhanceCollection(Parse.Collection.extend(options));
-	};
+			Parse.Object.extendAngular = function(options) {
+				return ParseAbstractService.EnhanceObject(Parse.Object.extend(options));
+			};
 
-}])
+			Parse.Collection.extendAngular = function(options) {
+				return ParseAbstractService.EnhanceCollection(Parse.Collection.extend(options));
+			};
 
-.factory('ParseSDK', function() {
+		}])
 
-	Parse.initialize(CONFIG.PARSE_APP_ID, CONFIG.PARSE_JS_KEY);
-	
-	// FACEBOOK init
-	/*window.fbPromise.then(function() {
+		.factory('ParseSDK', function() {
 
-		Parse.FacebookUtils.init({
+			Parse.initialize(CONFIG.PARSE_APP_ID, CONFIG.PARSE_JS_KEY);
+			
+			// FACEBOOK init
+			/*window.fbPromise.then(function() {
 
-			// pro-tip: swap App ID out for PROD App ID automatically on deploy using grunt-replace
-			appId: 481650395275919, // Facebook App ID
-			channelUrl: 'http://brandid.github.io/parse-angular-demo/channel.html', // Channel File
-			cookie: true, // enable cookies to allow Parse to access the session
-			xfbml: true, // parse XFBML
-			frictionlessRequests: true // recommended
+				Parse.FacebookUtils.init({
+
+					// pro-tip: swap App ID out for PROD App ID automatically on deploy using grunt-replace
+					appId: 481650395275919, // Facebook App ID
+					channelUrl: 'http://brandid.github.io/parse-angular-demo/channel.html', // Channel File
+					cookie: true, // enable cookies to allow Parse to access the session
+					xfbml: true, // parse XFBML
+					frictionlessRequests: true // recommended
+
+				});
+
+			});*/
 
 		});
-
-	});*/
-
-});
+	}
+);
