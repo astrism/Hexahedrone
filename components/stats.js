@@ -12,9 +12,15 @@ define([
 				replace: true,
 				scope: true,
 				link: function($scope, $element) {
-					var matches = new MatchService.collection();
-					var matchesPromise = matches.load();
-					matchesPromise.then($scope.onMatchesLoaded);
+					var Match = Parse.Object.extend('Match');
+					var MatchCollection = Parse.Collection.extend({
+						model: Match
+					});
+					var query = new Parse.Query(Match);
+					query.limit(100);
+					var collection = query.collection();
+					var promise = collection.fetch();
+					promise.then($scope.onMatchesLoaded);
 				},
 				controller: function($scope, $element) {
 					$scope.matches = [];
@@ -59,15 +65,9 @@ define([
 					};
 
 					$scope.onMatchesLoaded = function(matches) {
-						var matchesArr = matches.toArray();
-						var hexes = [];
-						var match;
-						for(var i = 0; i < matchesArr.length; i++) {
-							match = matchesArr[i];
-							$scope.matches.push(match);
-						}
-
+						$scope.matches = matches.models.slice();
 						console.log('matches:', $scope.matches);
+						$scope.$digest();
 					}
 				}
 			}
