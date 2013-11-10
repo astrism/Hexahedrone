@@ -1,10 +1,9 @@
 define([
-	'app',
-	'dt/Hex'
+	'app'
 	],
 	function(app) {
 
-		app.directive('sim', ['HexService', function(HexService) {
+		app.directive('sim', [function() {
 			return {
 				restrict: 'E', /* E: Element, C: Class, A: Attribute M: Comment */
 				templateUrl: 'components/sim.html',
@@ -72,8 +71,12 @@ define([
 					]
 
 					function loadHexes() {
-						var hexes = new HexService.collection();
-						var hexesPromise = hexes.load();
+						var Hex = Parse.Object.extend("Hex");
+						var HexCollection = Parse.Collection.extend({
+							model: Hex
+						});
+						var hexes = new HexCollection();
+						var hexesPromise = hexes.fetch();
 						hexesPromise.then(onHexesLoaded);
 					}
 					// The Reaping

@@ -1,11 +1,10 @@
 define([
 	'angular',
-	'app',
-	'dt/Match'
+	'app'
 	], 
 	function(angular, app) {
 
-		app.directive('stats', ['$compile', 'MatchService', function($compile, MatchService) {
+		app.directive('stats', ['$compile', function($compile) {
 			return {
 				restrict: 'E', /* E: Element, C: Class, A: Attribute M: Comment */
 				templateUrl: 'components/stats.html',
