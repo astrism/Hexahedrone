@@ -23,5 +23,14 @@
     "jquery": "~2.0.3",
     "requirejs": "~2.1.8",
     "angular-route": "~1.2.0"
+  },
+  "install": {
+    "path": "bower",
+    "ignore": [
+      "bootstrap"
+    ],
+    "sources": {
+      "underscore": "bower_components/underscore/underscore.js"
+    }
   }
 }
