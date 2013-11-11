@@ -11,7 +11,7 @@ define([
 					enableRowSelection: false,
 					columnDefs: [
 					{
-						field: 'attributes.winnerName',
+						field: 'attributes.winner.attributes.username',
 						displayName: 'Winner'
 					}, {
 						field: 'attributes.userNames.0',
@@ -57,6 +57,7 @@ define([
 				var Match = Parse.Object.extend('Match');
 				var query = new Parse.Query(Match);
 				query.limit(100);
+				query.include('winner');
 				var collection = query.collection();
 				var promise = collection.fetch();
 				promise.then($scope.onMatchesLoaded);
