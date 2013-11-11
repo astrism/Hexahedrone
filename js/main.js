@@ -5,7 +5,7 @@ require( [
 	'app',
 	'routes',
 	'router',
-	'cp/sim',
+	'vw/sim',
 	'vw/stats',
 	'vw/stats.latest',
 	'vw/stats.best',

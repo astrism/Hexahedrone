@@ -3,7 +3,7 @@ define([
 	],
 	function(app) {
 
-		app.directive('sim', function ($scope, $element) {
+		app.controller('sim', function ($scope) {
 
 			$scope.togglePause = function() {
 				$scope.game.paused = !$scope.game.paused;

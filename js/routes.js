@@ -19,7 +19,8 @@ define([
 		// });
 		$stateProvider.state('sim', {
 			url: "/sim",
-			templateUrl: "views/simView.html"
+			templateUrl: "views/simView.html",
+			controller: 'sim'
 		});
 
 		// STATs
