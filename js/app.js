@@ -4,7 +4,7 @@ define([
 	'underscore',
 	'grid'
 	], 
-	function (angular, Parse, _, ParseServices, _ParseObjects, ParseQueryAngular) {
+	function (angular, Parse, _) {
 
 		Parse.initialize(CONFIG.PARSE_APP_ID, CONFIG.PARSE_JS_KEY);
 		// Hexahedrone

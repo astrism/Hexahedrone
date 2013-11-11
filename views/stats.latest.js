@@ -43,6 +43,10 @@ define([
 						displayName: 'Right Corner',
 						headerClass: 'headerRightCorner',
 						cellClass: 'cellRightCorner'
+					}, {
+						field: 'createdAt',
+						cellFilter: 'date:"d/M ha"',
+						displayName: 'Time'
 					}]
 				};
 
@@ -56,7 +60,7 @@ define([
 				// init
 				var Match = Parse.Object.extend('Match');
 				var query = new Parse.Query(Match);
-				query.limit(100);
+				query.limit(25);
 				query.include('winner');
 				var collection = query.collection();
 				var promise = collection.fetch();
