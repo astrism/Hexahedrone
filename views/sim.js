@@ -56,10 +56,11 @@ define([
 			}
 
 			// objects
+			$scope.hexes;
 			$scope.paused = false;
 			$scope.gameOver = false;
 			$scope.boxes = [];
-			$scope.boxesBySprite = {};
+			$scope.boxesById = {};
 			$scope.boxA;
 			$scope.boxB;
 
@@ -92,6 +93,8 @@ define([
 			}
 			// The Reaping
 			function onHexesLoaded(hexes) {
+				$scope.hexes = hexes;
+
 				var playersPerMatch = 2,
 				// put them on the floor, TODO: Find a better solution for positioning on the floor
 				yPos = $scope.game.world.height - 100,
@@ -123,7 +126,7 @@ define([
 						var box = $scope.boxes[i];
 						var opponent = randOpponent(box);
 						box.setTarget(opponent);
-						$scope.boxesBySprite[box.sprite] = box;
+						$scope.boxesById[box.id] = box;
 					}
 				}
 
@@ -181,8 +184,8 @@ define([
 					// console.log('spriteB.velocity.x:', Math.abs(spriteB.velocity.x));
 					// console.log('veldiff:', Math.abs(velA - velB));
 
-						var boxA = $scope.boxesBySprite[spriteA];
-						var boxB = $scope.boxesBySprite[spriteB];
+						var boxA = $scope.boxesById[spriteA.name];
+						var boxB = $scope.boxesById[spriteB.name];
 						// injured object is moving faster due to collision?
 						if(velA < velB) {
 							// console.log('injure B');
@@ -214,7 +217,24 @@ define([
 			}
 
 			function endBattle(boxA, boxB) {
-				console.log('game over');
+				console.log('battle over');
+
+				if(boxA.dead && boxB.dead) {
+					//no change to wins/losses if both are dead
+				} else {
+					var hexA = $scope.hexes._byId[boxA.id];
+					var hexB = $scope.hexes._byId[boxB.id];
+
+					if(boxA.dead) {
+						hexA.increment('losses');
+						hexB.increment('wins');
+					} else if(boxB.dead) {
+						hexA.increment('wins');
+						hexB.increment('losses');
+					}
+					hexA.save();
+					hexB.save();
+				}
 
 				// notify box
 				boxA.endGame(boxB.dead);
@@ -231,7 +251,7 @@ define([
 				for(var i= 0; i < $scope.boxes.length; i++)
 					$scope.boxes[i].destroy();
 				$scope.boxes = [];
-				$scope.boxesBySprite = {};
+				$scope.boxesById = {};
 				loadHexes();
 
 				$scope.gameOver = false;

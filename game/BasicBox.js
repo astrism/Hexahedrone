@@ -89,6 +89,7 @@ define([
 
 			//create sprite
 			this.sprite = game.add.sprite(this.spriteX, 0, BasicBox.SPRITE_BOX);
+			this.sprite.name = this.id;
 			this.defaultWidth = this.sprite.width;
 			this.defaultHeight = this.sprite.height;
 			this.spriteY = game.world.height - this.defaultHeight;
