@@ -2,18 +2,15 @@ define([
 	'angular',
 	'parse',
 	'underscore',
-	'vn/ParseServices',
-	'vn/_ParseObjects',
-	'vn/ParseQueryAngular',
 	'grid'
 	], 
-	function (angular, Parse, _, ParseServices, _ParseObjects, ParseQueryAngular) {
+	function (angular, Parse, _) {
 
 		Parse.initialize(CONFIG.PARSE_APP_ID, CONFIG.PARSE_JS_KEY);
 		// Hexahedrone
-		var app = angular.module('app', ['ng', 'ui.router', 'ParseServices', 'ExternalDataServices', 'ngGrid']);
+		var app = angular.module('app', ['ng', 'ui.router', 'ngGrid']);
 		console.log('starting app')
-		app.run(['ParseSDK', 'ExtendParseSDK', '$rootScope', '$state', '$stateParams', function(ParseSDK, ExtendParseSDK, $rootScope,   $state,   $stateParams) {
+		app.run(['$rootScope', '$state', '$stateParams', function($rootScope,   $state,   $stateParams) {
 			console.log('running app');
 			// Parse is initialised by injecting the ParseService into the Angular app
 			$rootScope.$state = $state;

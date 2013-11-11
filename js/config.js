@@ -12,15 +12,16 @@ require.config({
 	baseUrl: 'js',
 	paths: {
 		'vn': 'vendor',
-		'bw': '../bower_components',
+		'bw': '../bower',
 		'cp': '../components',
 		'dt': '../data',
 		'gm': '../game',
-		'angular': '../bower_components/angular/angular',
-		'jquery': '../bower_components/jquery/jquery.min',
-		'underscore': '../bower_components/underscore/underscore-min',
-		'router': '../bower_components/angular-ui-router/release/angular-ui-router',
-		'grid': '../bower_components/ng-grid/ng-grid-2.0.7.debug',
+		'vw': '../views',
+		'angular': '../bower/angular/angular',
+		'jquery': '../bower/jquery/jquery.min',
+		'underscore': '../bower/underscore/underscore-min',
+		'router': '../bower/angular-ui-router/release/angular-ui-router',
+		'grid': '../bower/ng-grid/ng-grid-2.0.7.debug',
 		'parse': 'vendor/parse-1.2.12.min'
 	},
 	shim: {
