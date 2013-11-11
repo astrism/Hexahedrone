@@ -62,6 +62,7 @@ define([
 				var query = new Parse.Query(Match);
 				query.limit(25);
 				query.include('winner');
+				query.descending('createdAt');
 				var collection = query.collection();
 				var promise = collection.fetch();
 				promise.then($scope.onMatchesLoaded);
