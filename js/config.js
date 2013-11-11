@@ -18,10 +18,10 @@ require.config({
 		'gm': '../game',
 		'vw': '../views',
 		'angular': '../bower/angular/angular',
-		'jquery': '../bower/jquery/jquery.min',
-		'underscore': '../bower/underscore/underscore-min',
-		'router': '../bower/angular-ui-router/release/angular-ui-router',
-		'grid': '../bower/ng-grid/ng-grid-2.0.7.debug',
+		'jquery': '../bower/jquery/jquery',
+		'underscore': '../bower/underscore/underscore',
+		'router': '../bower/angular-ui-router/angular-ui-router.min',
+		'grid': '../bower/ng-grid/ng-grid.min',
 		'parse': 'vendor/parse-1.2.12.min'
 	},
 	shim: {
