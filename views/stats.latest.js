@@ -29,8 +29,8 @@ define([
 						headerClass: 'headerLeftCorner',
 						cellClass: 'cellLeftCorner'
 					}, {
-						field: 'attributes.userNames.1',
-						displayName: 'Right Corner',
+						field: 'attributes.health.1',
+						displayName: 'Health',
 						headerClass: 'headerRightCorner',
 						cellClass: 'cellRightCorner'
 					}, {
@@ -39,8 +39,8 @@ define([
 						headerClass: 'headerRightCorner',
 						cellClass: 'cellRightCorner'
 					}, {
-						field: 'attributes.health.1',
-						displayName: 'Health',
+						field: 'attributes.userNames.1',
+						displayName: 'Right Corner',
 						headerClass: 'headerRightCorner',
 						cellClass: 'cellRightCorner'
 					}]
