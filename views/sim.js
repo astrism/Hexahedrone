@@ -56,10 +56,10 @@ define([
 			}
 
 			// objects
-			$scope.hexes;
 			$scope.paused = false;
 			$scope.gameOver = false;
 			$scope.boxes = [];
+			$scope.hexesById = {};
 			$scope.boxesById = {};
 			$scope.boxA;
 			$scope.boxB;
@@ -84,11 +84,9 @@ define([
 
 			function loadHexes() {
 				var Hex = Parse.Object.extend("Hex");
-				var HexCollection = Parse.Collection.extend({
-					model: Hex
-				});
-				var hexes = new HexCollection();
-				var hexesPromise = hexes.fetch();
+				var query = new Parse.Query(Hex);
+				query.include('owner');
+				var hexesPromise = query.find();
 				hexesPromise.then(onHexesLoaded);
 			}
 			// The Reaping
@@ -99,10 +97,14 @@ define([
 				// put them on the floor, TODO: Find a better solution for positioning on the floor
 				yPos = $scope.game.world.height - 100,
 				// grab a copy of the parse data
-				availableHexes = hexes.models.slice(),
+				availableHexes = hexes.slice(),
 				rand, 
 				data, 
 				box;
+
+				_.each(hexes, function(hex, index, list) {
+					$scope.hexesById[hex.id] = hex;
+				});
 
 				for(var i= 0; i < playersPerMatch; i++) {
 					// choose/create random piece from selection of available pieces
@@ -218,23 +220,45 @@ define([
 
 			function endBattle(boxA, boxB) {
 				console.log('battle over');
+				var hexA = $scope.hexesById[boxA.id];
+				var hexB = $scope.hexesById[boxB.id];
 
 				if(boxA.dead && boxB.dead) {
 					//no change to wins/losses if both are dead
+					hexA.increment('ties');
+					hexB.increment('ties');
 				} else {
-					var hexA = $scope.hexes._byId[boxA.id];
-					var hexB = $scope.hexes._byId[boxB.id];
+					var winner;
 
 					if(boxA.dead) {
+						winner = hexB;
 						hexA.increment('losses');
 						hexB.increment('wins');
 					} else if(boxB.dead) {
+						winner = hexA;
 						hexA.increment('wins');
 						hexB.increment('losses');
 					}
 					hexA.save();
 					hexB.save();
 				}
+
+				var Match = Parse.Object.extend('Match');
+				var newMatch = new Match();
+				newMatch.set('hexes', [boxA.id, boxB.id]);
+				newMatch.set('hexNames', [boxA.name, boxB.name]);
+				newMatch.set('health', [boxA.health, boxB.health]);
+				newMatch.set('userIds', [hexA.get('owner').id, hexB.get('owner').id]);
+				newMatch.set('userNames', [hexA.get('owner').get('username'), hexB.get('owner').get('username')]);
+				if(winner) {
+					newMatch.set('winner', winner.get('owner'));
+				}
+				newMatch.save().then(
+					function(savedMatch) {
+						console.log('match created with id:', savedMatch.id);
+					}, function(error) {
+						console.log('error creating match', error);
+					});
 
 				// notify box
 				boxA.endGame(boxB.dead);
