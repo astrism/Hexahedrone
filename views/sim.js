@@ -105,7 +105,7 @@ define([
 					// choose/create random piece from selection of available pieces
 					rand = _.random(availableHexes.length - 1);
 					data = availableHexes[rand];
-					box = new BasicBox(data.get('id'), data.get('name'), locations[i], yPos, data.get('actions'));
+					box = new BasicBox(data.id, data.get('name'), locations[i], yPos, data.get('actions'));
 					// initialize
 					box.createWithGame($scope.game);
 					// add to list of boxes
@@ -207,20 +207,23 @@ define([
 						}
 
 						// death check
-						if(boxA.dead || boxB.dead) {
-							console.log('game over');
-
-							// notify box
-							boxA.endGame(boxB.dead);
-							boxB.endGame(boxA.dead);
-
-							$scope.gameOver = true;
-
-							// timer for next battle
-							setTimeout(startNewBattle, 2500);
-						}
+						if(boxA.dead || boxB.dead)
+							endBattle(boxA, boxB);
 					}
 				}
+			}
+
+			function endBattle(boxA, boxB) {
+				console.log('game over');
+
+				// notify box
+				boxA.endGame(boxB.dead);
+				boxB.endGame(boxA.dead);
+
+				$scope.gameOver = true;
+
+				// timer for next battle
+				setTimeout(startNewBattle, 2500);
 			}
 
 			function startNewBattle() {
