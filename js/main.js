@@ -6,7 +6,10 @@ require( [
 	'routes',
 	'router',
 	'cp/sim',
-	'cp/stats'
+	'vw/stats',
+	'vw/stats.latest',
+	'vw/stats.best',
+	'vw/stats.worst'
 	], 
 	function(angular, Parse, _, app) {
 		'use strict';

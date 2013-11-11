@@ -1,3 +1,36 @@
 <h1>Stats</h1>
 <hr/>
-<stats id="statsView"></stats>
+<div class="stats">
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+			font-size: 20px;
+		}
+
+		.stats .btn-group {
+			margin-bottom: 10px;
+		}
+
+		.pause {
+			float: right;
+		}
+	</style>
+	<div class="btn-group">
+		<button class="btn btn-default"
+				ui-sref="stats.latest"
+				ng-class="{ active: $state.is('stats.latest') }">
+			Latest
+		</button>
+		<button class="btn btn-default"
+				ui-sref="stats.best"
+				ng-class="{ active: $state.is('stats.best') }">
+			Best Hexes
+		</button>
+		<button class="btn btn-default"
+				ui-sref="stats.worst"
+				ng-class="{ active: $state.is('stats.worst') }">
+			Worst Hexes
+		</button>
+	</div>
+	<ui-view/>
+</div>

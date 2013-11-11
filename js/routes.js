@@ -21,9 +21,31 @@ define([
 			url: "/sim",
 			templateUrl: "views/simView.html"
 		});
+
+		// STATs
+		$urlRouterProvider.when('/stats', '/stats/latest');
 		$stateProvider.state('stats', {
 			url: "/stats",
-			templateUrl: "views/statsView.html"
+			templateUrl: "views/statsView.html",
+			controller: 'stats'
+		});
+
+		$stateProvider.state('stats.latest', {
+			url: "/latest",
+			templateUrl: "views/statsViewDetail.html",
+			controller: 'stats.latest'
+		});
+
+		$stateProvider.state('stats.best', {
+			url: "/best",
+			templateUrl: "views/statsViewDetail.html",
+			controller: 'stats.best'
+		});
+
+		$stateProvider.state('stats.worst', {
+			url: "/worst",
+			templateUrl: "views/statsViewDetail.html",
+			controller: 'stats.worst'
 		});
 	}]);
 
